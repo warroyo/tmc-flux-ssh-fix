@@ -1,0 +1,24 @@
+apiVersion: mutations.gatekeeper.sh/v1
+kind: ModifySet
+metadata:
+  name: add-ssh-arg-flux
+spec:
+  applyTo:
+  - groups: [""]
+    kinds: ["Pod"]
+    versions: ["v1"]
+  location: "spec.containers[name: manager].args"
+  match:
+    scope: Namespaced
+    kinds:
+    - apiGroups: ["*"]
+      kinds: ["Pod"]
+    namespaces: ["tanzu-source-controller"]
+    labelSelector:
+      matchLabels:
+        app: source-controller
+  parameters:
+    operation: merge
+    values:
+      fromList:
+        - --ssh-hostkey-algos=rsa-sha2-512,rsa-sha2-256 
